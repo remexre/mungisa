@@ -7,7 +7,13 @@ version = "0.1.0"
 
 [dependencies]
 failure = "0.1.1"
+futures = "0.1.21"
+hyper = "0.11.25"
+kankyo = "0.2.0"
 log = "0.4.1"
 serenity = "0.5.2"
 stderrlog = { version = "0.3.1-pre", git = "https://github.com/remexre/stderrlog-rs.git" }
 structopt = "0.2.7"
+tokio-core = "0.1.17"
+tokio-timer = "0.2.1"
+void = "1.0.2"
