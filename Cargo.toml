@@ -1,0 +1,13 @@
+[package]
+authors = ["Nathan Ringo <remexre@gmail.com>"]
+description = "Uptime monitoring Discord bot."
+license = "Apache-2.0/MIT"
+name = "mungisa"
+version = "0.1.0"
+
+[dependencies]
+failure = "0.1.1"
+log = "0.4.1"
+serenity = "0.5.2"
+stderrlog = { version = "0.3.1-pre", git = "https://github.com/remexre/stderrlog-rs.git" }
+structopt = "0.2.7"
