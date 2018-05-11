@@ -4,6 +4,7 @@ use hyper::client::{Connect, FutureResponse};
 use void::Void;
 
 pub fn check_website<C: Connect>(client: &Client<C, Body>, uri: &Uri) -> CheckFuture {
+    info!("Checking that {} is up...", uri);
     CheckFuture(client.get(uri.clone()))
 }
 
