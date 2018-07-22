@@ -3,7 +3,7 @@ authors = ["Nathan Ringo <remexre@gmail.com>"]
 description = "Uptime monitoring Discord bot."
 license = "Apache-2.0/MIT"
 name = "mungisa"
-version = "0.1.0"
+version = "0.2.0"
 
 [dependencies]
 env_logger = "0.5.10"
