@@ -35,9 +35,9 @@ use serenity::{
 use structopt::StructOpt;
 use tokio_core::reactor::Core;
 use tokio_timer::Interval;
+use void::ResultVoidExt;
 
 use check::check_website;
-use get_hostname::get_hostname;
 use handler::Handler;
 use options::Options;
 
@@ -52,6 +52,11 @@ fn main() {
 }
 
 fn run(options: Options) -> Result<(), Error> {
+    let mut core = Core::new()?;
+    let http_client = HyperClient::new(&core.handle());
+
+    let hostname = core.run(options.hostname(&http_client)).void_unwrap();
+
     let token = options.discord_token();
     validate_token(&token).map_err(SyncFailure::new)?;
 
@@ -63,9 +68,6 @@ fn run(options: Options) -> Result<(), Error> {
             .cmd("ping", handler::ping),
     );
     let listen = spawn(move || listen_thread(discord_client));
-
-    let mut core = Core::new()?;
-    let http_client = HyperClient::new(&core.handle());
 
     let interval = Interval::new(Instant::now(), Duration::from_secs(1 * 60));
     let channel = options.channel_id();
@@ -80,7 +82,9 @@ fn run(options: Options) -> Result<(), Error> {
                 result(
                     if !ok {
                         channel
-                            .send_message(|m| m.content("The website looks down..."))
+                            .send_message(|m| {
+                                m.content(format!("[{}] The website looks down...", hostname))
+                            })
                             .map(|_| ())
                             .map_err(SyncFailure::new)
                     } else {

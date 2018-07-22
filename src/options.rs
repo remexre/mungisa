@@ -1,8 +1,16 @@
 use std::borrow::Cow;
 use std::env::var;
 
-use hyper::Uri;
+use futures::{
+    future::{ok, Either}, Future,
+};
+use hyper::{
+    client::Connect, {Body, Client, Uri},
+};
 use serenity::model::id::ChannelId;
+use void::Void;
+
+use get_hostname::get_hostname;
 
 #[derive(Debug, StructOpt)]
 #[structopt(raw(global_setting = "::structopt::clap::AppSettings::ColoredHelp"))]
@@ -16,6 +24,10 @@ pub struct Options {
     /// variable.
     #[structopt(long = "discord-token")]
     discord_token: Option<String>,
+
+    /// The hostname to report.
+    #[structopt(short = "h", long = "hostname")]
+    hostname: Option<String>,
 
     /// Turns off message output.
     #[structopt(short = "q", long = "quiet")]
@@ -48,6 +60,18 @@ impl Options {
         self.discord_token
             .clone()
             .unwrap_or_else(|| var("DISCORD_TOKEN").expect("Missing or invalid Discord token"))
+    }
+
+    /// Gets the hostname.
+    pub fn hostname<C: Connect>(
+        &self,
+        client: &Client<C, Body>,
+    ) -> impl Future<Item = String, Error = Void> {
+        if let Some(ref hostname) = self.hostname {
+            Either::A(ok(hostname.clone()))
+        } else {
+            Either::B(get_hostname(client))
+        }
     }
 
     /// Sets up logging as specified by the `-q` and `-v` flags.
