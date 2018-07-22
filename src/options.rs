@@ -29,18 +29,10 @@ pub struct Options {
     #[structopt(short = "h", long = "hostname")]
     hostname: Option<String>,
 
-    /// Turns off message output.
-    #[structopt(short = "q", long = "quiet")]
-    quiet: bool,
-
     /// The URL of the website to check. Overrides the `WEBSITE_URL`
     /// environment variable.
     #[structopt(long = "url")]
     url: Option<String>,
-
-    /// Increases the verbosity. Default verbosity is errors only.
-    #[structopt(short = "v", long = "verbose", parse(from_occurrences))]
-    verbose: usize,
 }
 
 impl Options {
@@ -76,12 +68,7 @@ impl Options {
 
     /// Sets up logging as specified by the `-q` and `-v` flags.
     pub fn start_logger(&self) {
-        if !self.quiet {
-            let r = ::stderrlog::new().verbosity(self.verbose).init();
-            if let Err(err) = r {
-                error!("Logging couldn't start: {}", err);
-            }
-        }
+        ::env_logger::init_from_env(::env_logger::Env::new());
     }
 
     /// Gets the URL to check from the environment variable `WEBSITE_URL`, the

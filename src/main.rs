@@ -1,3 +1,4 @@
+extern crate env_logger;
 extern crate failure;
 extern crate futures;
 extern crate hostname;
@@ -11,7 +12,6 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate serenity;
-extern crate stderrlog;
 #[macro_use]
 extern crate structopt;
 extern crate tokio_core;

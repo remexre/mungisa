@@ -4,4 +4,4 @@ WORKDIR /usr/src/mungisa
 COPY . .
 
 RUN cargo install --path /usr/src/mungisa
-CMD ["mungisa", "-vv"]
+CMD ["mungisa"]
