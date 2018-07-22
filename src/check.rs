@@ -1,6 +1,7 @@
 use futures::{Async, Future};
-use hyper::{Body, Client, Uri};
-use hyper::client::{Connect, FutureResponse};
+use hyper::{
+    client::{Connect, FutureResponse}, {Body, Client, Uri},
+};
 use void::Void;
 
 pub fn check_website<C: Connect>(client: &Client<C, Body>, uri: &Uri) -> CheckFuture {

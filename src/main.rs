@@ -1,9 +1,14 @@
 extern crate failure;
 extern crate futures;
+extern crate hostname;
 extern crate hyper;
 extern crate kankyo;
 #[macro_use]
 extern crate log;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
 #[macro_use]
 extern crate serenity;
 extern crate stderrlog;
@@ -14,6 +19,7 @@ extern crate tokio_timer;
 extern crate void;
 
 mod check;
+mod get_hostname;
 mod handler;
 mod options;
 
@@ -21,16 +27,17 @@ use std::thread::spawn;
 use std::time::{Duration, Instant};
 
 use failure::{Error, SyncFailure};
-use futures::{Future, Stream};
-use futures::future::result;
+use futures::{future::result, Future, Stream};
 use hyper::Client as HyperClient;
-use serenity::client::{validate_token, Client};
-use serenity::framework::standard::StandardFramework;
+use serenity::{
+    client::{validate_token, Client}, framework::standard::StandardFramework,
+};
 use structopt::StructOpt;
 use tokio_core::reactor::Core;
 use tokio_timer::Interval;
 
 use check::check_website;
+use get_hostname::get_hostname;
 use handler::Handler;
 use options::Options;
 
@@ -70,13 +77,16 @@ fn run(options: Options) -> Result<(), Error> {
         let res = check_website(&http_client, &website_url)
             .map_err(|void| match void {})
             .and_then(|ok| {
-                result(if !ok {
-                    channel.send_message(|m| m.content("The website looks down..."))
-                        .map(|_| ())
-                        .map_err(SyncFailure::new)
-                } else {
-                    Ok(())
-                }.map_err(Error::from))
+                result(
+                    if !ok {
+                        channel
+                            .send_message(|m| m.content("The website looks down..."))
+                            .map(|_| ())
+                            .map_err(SyncFailure::new)
+                    } else {
+                        Ok(())
+                    }.map_err(Error::from),
+                )
             })
             .wait();
 
